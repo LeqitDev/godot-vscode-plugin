@@ -27,6 +27,7 @@ import {
 } from "./utils";
 import { prompt_for_godot_executable } from "./utils/prompts";
 import { killSubProcesses, subProcess } from "./utils/subspawn";
+import { get } from "http";
 
 interface Extension {
 	context?: vscode.ExtensionContext;
@@ -154,10 +155,11 @@ async function open_workspace_with_editor() {
 	const settingName = `editorPath.godot${projectVersion[0]}`;
 	const godotPath = get_configuration(settingName);
 	const result = verify_godot_version(godotPath, projectVersion[0]);
+	const lspPort = get_configuration("lsp.serverPort");
 
 	switch (result.status) {
 		case "SUCCESS": {
-			let command = `${godotPath} --path "${projectDir}" -e`;
+			let command = `${godotPath} --path "${projectDir}" --lsp-port ${lspPort} -e`;
 			if (get_configuration("editor.verbose")) {
 				command += " -v";
 			}
